@@ -46,7 +46,7 @@
   foreach ($mysqli->query('SELECT * FROM `'.$config['table'].'`') as $field) {
     echo "<tr>";
     echo "<td class='datetime'>".$field['datetime']."</td>";
-    echo "<td class='msg'>".$field['msg']."</td>";
+    echo "<td class='msg'>".htmlentities($field['msg'])."</td>";
     echo "</tr>";
   }
 ?>
