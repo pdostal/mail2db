@@ -26,8 +26,10 @@
 
       table { min-width: 300px; height: 100%; top: 0px; margin: 45px 5px 25px 5px; }
 
-      .datetime { min-width: 150px; }
-      .msg { min-width: 125px; overflow: visible; white-space: nowrap; }
+      .datetime { min-width: 105px; max-width: 105px; text-align: left; }
+      .type { min-width: 35px; max-width: 35px; text-align: left; }
+      .num { min-width: 45px; max-width: 45px; text-align: left; }
+      .msg { min-width: 125px; overflow: visible; white-space: nowrap; text-align: left; }
     </style>
   </head>
   <body>
@@ -38,16 +40,33 @@
       <thead>
         <tr>
           <th class='datetime'>Date &amp; Time</th>
+          <th class='type'>Type</th>
+          <th class='num'>#</th>
           <th class='msg'>Message</th>
         </tr>
       </thead>
       <tbody>
 <?php
   foreach ($mysqli->query('SELECT * FROM `'.$config['table'].'`') as $field) {
-    echo "<tr>";
-    echo "<td class='datetime'>".$field['datetime']."</td>";
-    echo "<td class='msg'>".htmlentities($field['msg'])."</td>";
-    echo "</tr>";
+    $date = preg_replace('/^([0-9]+)-([0-9]+)-([0-9]+)( .+)/i', '$3.$2. $4', $field['datetime']);
+    $type = preg_replace('/([a-z]+)(\[[0-9]+\]: .+)/i', '$1', $field['msg']);
+    $num = preg_replace('/([a-z]+\[)([0-9]+)(\]: .+)/i', '$2', $field['msg']);
+    if (preg_match('/^[a-z]+\[[0-9]+\]: [A-Z0-9]+: /i', htmlentities($field['msg']))) {
+      $msg = ucfirst(preg_replace('/^[a-z]+\[[0-9]+\]: [A-Z0-9]+: /i', '', htmlentities($field['msg'])));
+    } else {
+      $msg = ucfirst(preg_replace('/^[a-z]+\[[0-9]+\]: /i', '', htmlentities($field['msg'])));
+    }
+    if (preg_match('/Removed$/', $msg)) {
+      $class = 'removed';
+    }
+    echo "<tr class='".$class."'>\n";
+    echo "<!-- ".htmlentities($field['msg'])." -->\n";
+    echo "<td class='datetime'>".$date."</td>\n";
+    echo "<td class='type'>".$type."</td>\n";
+    echo "<td class='num'>".$num."</td>\n";
+    echo "<td class='msg'>".$msg."</td>\n";
+    echo "</tr>\n";
+    unset($class,$date,$type,$num,$msg);
   }
 ?>
       </tbody>
