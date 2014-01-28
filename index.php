@@ -47,24 +47,20 @@
       </thead>
       <tbody>
 <?php
-  foreach ($mysqli->query('SELECT * FROM `'.$config['table'].'`') as $field) {
+  foreach ($mysqli->query('SELECT * FROM `'.$config['table'].'` order by `datetime` desc') as $field) {
     $date = preg_replace('/^([0-9]+)-([0-9]+)-([0-9]+)( .+)/i', '$3.$2. $4', $field['datetime']);
-    $type = preg_replace('/([a-z]+)(\[[0-9]+\]: .+)/i', '$1', $field['msg']);
-    $num = preg_replace('/([a-z]+\[)([0-9]+)(\]: .+)/i', '$2', $field['msg']);
-    if (preg_match('/^[a-z]+\[[0-9]+\]: [A-Z0-9]+: /i', htmlentities($field['msg']))) {
-      $msg = ucfirst(preg_replace('/^[a-z]+\[[0-9]+\]: [A-Z0-9]+: /i', '', htmlentities($field['msg'])));
-    } else {
-      $msg = ucfirst(preg_replace('/^[a-z]+\[[0-9]+\]: /i', '', htmlentities($field['msg'])));
-    }
-    if (preg_match('/Removed$/', $msg)) {
+    if (preg_match('/Removed$/', $field['msg'])) {
       $class = 'removed';
+    }
+    if (preg_match('/\(queue active\)$/', $field['msg'])) {
+      $class = 'started';
     }
     echo "<tr class='".$class."'>\n";
     echo "<!-- ".htmlentities($field['msg'])." -->\n";
     echo "<td class='datetime'>".$date."</td>\n";
-    echo "<td class='type'>".$type."</td>\n";
-    echo "<td class='num'>".$num."</td>\n";
-    echo "<td class='msg'>".$msg."</td>\n";
+    echo "<td class='type'>".$field['type']."</td>\n";
+    echo "<td class='num'>".$field['num']."</td>\n";
+    echo "<td class='msg'>".$field['msg']."</td>\n";
     echo "</tr>\n";
     unset($class,$date,$type,$num,$msg);
   }
