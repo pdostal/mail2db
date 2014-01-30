@@ -55,6 +55,9 @@
     if (preg_match('/\(queue active\)$/', $field['msg'])) {
       $class = 'started';
     }
+    if ($field['type'] == 'qmgr') {
+      unset($field['num']);
+    }
     echo "<tr class='".$class."'>\n";
     echo "<!-- ".htmlentities($field['msg'])." -->\n";
     echo "<td class='datetime'>".$date."</td>\n";
