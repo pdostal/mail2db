@@ -14,7 +14,11 @@
 			$datetime = trim(preg_replace('/ [a-zA-Z0-9]+ postfix\/.+$/i', '', $line));
 			$datetime = date('Y-m-').preg_replace('/^([A-Z][a-z]+) ([0-9]+) (.+)/i', '$2 $3', $datetime);
 			$type = trim(preg_replace('/(^.+postfix\/)([a-z]+)(.+$)/i', '$2', $line));
-		    $num = trim(preg_replace('/(^.+postfix\/[a-z]+\[)([0-9]+)(\]: .+$)/i', '$2', $line));
+		    if ($type !== 'qmgr') {
+		    	$num = trim(preg_replace('/(^.+postfix\/[a-z]+\[)([0-9]+)(\]: .+$)/i', '$2', $line));
+		    } else {
+		    	$num = '';
+		    }
 			$msg = preg_replace('/^.+postfix\/[a-z]+\[[0-9]+\]: /i', '', $line);
 			$msg = ucfirst(trim(htmlentities(preg_replace('/^[A-Z0-9]+: /i', '', $msg))));
 			//echo trim($line)."\n".$datetime.' X '.md5($msg).' X '.$type.' X '.$num.' X '.$msg."\n\n\n";
